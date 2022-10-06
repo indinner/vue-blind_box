@@ -1,6 +1,126 @@
 body{
     background-color: #ededed;
 }
+.div_buy_1{
+    display: flex;
+    justify-content: space-around;
+    width: 88%;
+    margin-left: 6%;
+    margin-top: 3%;
+}
+.div_buy_2{
+    width: 30%;
+    height: 140px;
+    border: 2px solid black;
+    border-radius: 6px;
+}
+.rose_name{
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    margin-top: 15%;
+}
+.rose_buy{
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    margin-top: 15%;
+}
+.rose_buy_bt{
+    width: 50px;
+    border-radius: 7px;
+    margin-top: 15px;
+    height: 40px;
+    font-weight: 600;
+    margin-right: 10px;
+}
+.rose_price{
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    margin-top: 15%;
+    color: #e83a3a;
+}
+.rose_div{
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10%;
+}
+
+.rose_img{
+    width: 40px;
+    height: 40px;
+}
+.rose_img1{
+    width: 30px;
+    height: 30px;
+}
+
+.rose_text{
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    margin-top: 2%;
+}
+.rose_sign{
+    display: flex;
+    justify-content: space-between;
+    border: 2px solid black;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    width: 84%;
+    margin-left: 8%;
+    margin-top: 4%;
+    border-radius: 7px;
+}
+.signin_text{
+    font-size: 15px;
+    font-weight: 600;
+    margin-top: 5px;
+    margin-left: 10px;
+}
+.signin_div_btn{
+    padding-right: 20px;
+}
+.signin_btn{
+    width: 50px;
+    border-radius: 7px;
+    font-size: 12px;
+    margin-top: 15px;
+    height: 40px;
+    font-weight: 600;
+    margin-right: 10px;
+}
+.div_2{
+    display: flex;
+    justify-content: space-evenly;
+    padding-top: 13px;
+}
+.div_2_box{
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    width: 41%;
+    display: flex;
+    justify-content: space-around;
+}
+.div_2_icon{
+    width: 30px;
+    height: 30px;
+}
+.div_2_text{
+    font-weight: 600;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+.div_2_tex1{
+    font-weight: 600;
+    margin-top: 6px;
+}
+
 .div_0{
     width: 100%;
     display: flex;
@@ -14,7 +134,7 @@ body{
 
 .notice{
     position: absolute;
-    top: 160px;
+    top: 150px;
 }
 .notice_div{
     text-align: center;
@@ -47,7 +167,7 @@ body{
 .div_1{
     display: flex;
     justify-content: space-between;
-    padding-top: 20px;
+    padding-top: 10px;
 }
 .div_box_1{
     width: 50%;
@@ -74,10 +194,13 @@ body{
     color: #8080f2;
 }
 .div_btn{
-    width: 80%;margin-left: 10%;
     border-radius: 7px;
     font-size: 12px;
-    margin-top: 10px;
     height: 40px;
     font-weight: 600;
+}
+.div_btn1{
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
 }
