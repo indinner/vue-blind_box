@@ -7,7 +7,7 @@ let request = axios.create({
 
 //判断是否是生产环境
 if (process.env.NODE_ENV === 'development') {
-    request.defaults.baseURL = 'http://127.0.0.1:7770'
+    request.defaults.baseURL = 'http://192.168.31.44:7770'
 } else if (process.env.NODE_ENV === 'production') {
     request.defaults.baseURL = 'http://121.4.138.132:8891'
 }

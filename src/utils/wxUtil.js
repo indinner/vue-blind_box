@@ -3,6 +3,31 @@ import BaseConfig from "@/config/base.config.js"
 let wxUtil={
 
 
+
+    /**
+     * JSAPI统一下单，生成预支付交易单*/
+    getPrepayId(that,openid,description,total){
+        return new Promise(function (resolve, reject) {
+            /*商品订单号*/
+            let timestmp=new Date().getTime().toString()+'tt'
+            /*请求后台统一下单，获取预支付prepay_id*/
+            that.$http.post("/wxPay/jsapi",{
+                description:description,
+                out_trade_no:timestmp,
+                total:total,
+                openid:openid
+            }).then((res)=>{
+                if(res.data.prepay_id!=null||res.data.prepay_id!==""){
+                    resolve(res.data.prepay_id)
+                }else {
+                    resolve(404)
+                }
+            }).catch((err)=>{
+                resolve(404)
+            })
+        })
+    },
+
     /**
      * 获取用户头像等信息
      * @param callBack 认证成功的回调函数*/

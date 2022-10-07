@@ -1,6 +1,111 @@
 body{
     background-color: #ededed;
 }
+.div_scrip{
+
+}
+.div_scrip_title{
+    display: flex;
+    justify-content: center;
+    font-weight: 600;
+    margin-top: 5px;
+}
+.div_headimg{
+    display: flex;
+    padding-left: 20px;
+    padding-top: 10px;
+}
+.scrip_headimg{
+    width: 32px;
+    height: 32px;
+    border-radius: 100%;
+    border: 1px solid black;
+}
+.scrip_nickname{
+    font-size: 15px;
+    font-weight: 600;
+    padding-top: 5px;
+    padding-left: 1%;
+    text-align: center;
+}
+.scrip_input_div{
+    width: 90%;
+    margin-left: 5%;
+    margin-top: 3%;
+    height: 100%;
+    border: 2px solid black;
+    border-radius: 7px;
+}
+
+
+.div_location{
+    margin-top: 5px;
+    margin-left: 12px;
+    margin-bottom: 5px;
+}
+
+
+.div_uploader_img{
+    padding-left: 10px;
+    padding-top: 5px;
+    display: flex;
+}
+.div_uploader_img_preview{
+    width: 73px;
+    height: 73px;
+    border: 1px solid black;
+    margin-right: 5px;
+}
+.div_vx_input{
+    margin-left: 10px;
+    margin-right: 10px;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+.div_vx_input1{
+    margin-left: -5px;
+}
+
+.div_scrip_life{
+    display: flex;
+}
+
+.div_bt_save{
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    margin-top: 0px;
+}
+.div_bt_save_1{
+    width: 40%;
+    font-size: 12px;
+    font-weight: 600;
+}
+.div_bt_save_2{
+    width: 50%;
+    font-weight: 600;
+}
+.div_title1{
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+.div_title1_text1{
+    font-size: 12px;
+    margin-top: 5px;
+    font-weight: 600;
+    color: #cfcfcf;
+    margin-right: 5px;
+    text-decoration:line-through;
+}
+.div_title1_text2{
+    font-size: 17px;
+    font-weight: 600;
+    color: green;
+    margin-left: 5px;
+}
+
 .div_buy_1{
     display: flex;
     justify-content: space-around;

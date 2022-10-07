@@ -3,7 +3,6 @@
 
     <!--  弹出层  -->
     <div>
-
       <!--   展示玫瑰   -->
       <div>
         <van-popup v-model:show="show.roseShow"
@@ -17,7 +16,7 @@
               <img  class="rose_img" src="https://cos.jianwei.top/blind_box/icon/%E7%8E%AB%E7%91%B0.png"/>
             </div>
             <div class="rose_text">
-              <span>我有 {{ userInfo.rose }} 玫瑰</span>
+              <span>我有 {{ scrip.userInfo.rose }} 玫瑰</span>
             </div>
             <div class="rose_sign">
               <div style="display: flex;justify-content: center">
@@ -29,7 +28,7 @@
                 </div>
               </div>
               <div class="signin_div_btn">
-                <van-button class="signin_btn" size="mini" color="black">签到</van-button>
+                <van-button @click="signIn" class="signin_btn" size="mini" color="black">签到</van-button>
               </div>
             </div>
 
@@ -50,6 +49,101 @@
               </div>
             </div>
 
+          </div>
+        </van-popup>
+      </div>
+
+      <!--   添加纸条   -->
+      <div>
+        <van-popup v-model:show="show.saveScrip"
+                   lazy-render
+                   round
+                   closeable
+                   :style="{ width:'90%' }">
+          <div class="div_scrip">
+            <!--     title       -->
+            <div v-show="scrip.gender===0" class="div_scrip_title">放入一张女生纸条</div>
+            <div v-show="scrip.gender===1" class="div_scrip_title">放入一张男生纸条</div>
+            <!--     头像昵称       -->
+            <div class="div_headimg">
+              <img class="scrip_headimg" :src="scrip.userInfo.headimgurl" />
+              <div class="scrip_nickname">
+                <span>{{ scrip.userInfo.nickname }}</span>
+              </div>
+            </div>
+            <!-- 输入框 -->
+            <div class="scrip_input_div">
+              <div>
+                <!-- 定位 -->
+                <div class="div_location">
+                  <van-tag color="black" size="medium" type="warning">
+                    <van-icon name="location" /><span>{{ scrip.cityName }}</span>
+                  </van-tag>
+                </div>
+                <div class="van-hairline--bottom"></div>
+              </div>
+              <!-- 内容 -->
+              <van-field
+                  v-model="scrip.resume"
+                  type="textarea"
+                  placeholder="输入你的交友宣言(请文明填写,禁止在宣言留下个人信息,请认真填写VX号,事先检查是否打开了加好友的权限)"
+              />
+              <!-- 图片 -->
+              <div class="div_uploader_img">
+                <van-image  fit="cover" class="div_uploader_img_preview" v-for="item in scrip.picture" :src="item" />
+                <van-uploader
+                    v-show="scrip.picture.length<3"
+                    :after-read="afterRead">
+                </van-uploader>
+              </div>
+
+              <!-- 我的VX -->
+              <div class="div_vx_input">
+                <van-field left-icon="wechat" v-model="scrip.weChat" label="WX or TEL" placeholder="请输入WX or TEL" />
+              </div>
+
+              <!-- 纸条生命  -->
+              <div class="div_vx_input1" >
+                <van-cell-group inset>
+                  <van-field
+                      center
+                      clearable
+                      readonly
+                      left-icon="smile"
+                      label="纸条生命"
+                  >
+                    <template #button>
+                      <van-stepper v-model="scrip.life" min="1" max="3" />
+                    </template>
+                  </van-field>
+                </van-cell-group>
+
+              </div>
+
+
+            </div>
+
+            <div>
+              <div class="div_title1">
+                <span class="div_title1_text1">1玫瑰/次 </span>
+                <span class="div_title1_text2"> 限时免费</span>
+              </div>
+            </div>
+
+            <!--  保存按钮  -->
+            <div>
+              <div class="div_bt_save">
+                <van-button @click="scrip.isOpen=1" v-show="!scrip.isOpen" :plain="true" class="div_bt_save_1" size="normal" color="black">
+                   <van-icon name="circle"></van-icon>展示在广场
+                </van-button>
+                <van-button @click="scrip.isOpen=0" v-show="scrip.isOpen" :plain="false" class="div_bt_save_1" size="normal" color="black">
+                  <van-icon name="success"></van-icon>展示在广场
+                </van-button>
+                <van-button @click="saveScrip" class="div_bt_save_2" size="normal" color="black">
+                  确认放入
+                </van-button>
+              </div>
+            </div>
           </div>
         </van-popup>
       </div>
@@ -79,12 +173,12 @@
             <div class="div_2_icon">
               <img style="width: 100%;height: 100%" src="https://cos.jianwei.top/blind_box/icon/%E7%8E%AB%E7%91%B0.png"/>
             </div>
-            <div class="div_2_text">
+            <div @click="show.roseShow=!show.roseShow" class="div_2_text">
               <span>我的玫瑰</span>
             </div>
           </div>
           <div class="div_2_tex1">
-            <span>{{ userInfo.rose }}</span>
+            <span>{{ scrip.userInfo.rose }}</span>
           </div>
         </div>
 
@@ -98,7 +192,7 @@
             </div>
           </div>
           <div class="div_2_tex1">
-            <span>1</span>
+            <span>{{ scrip.userInfo.scripCount }}</span>
           </div>
         </div>
 
@@ -110,10 +204,10 @@
       <div class="div_box_1">
         <img class="img" src="https://rbt-1302363069.cos.ap-shanghai.myqcloud.com/yuelao/501638764175257772.png">
         <div class="div_btn1">
-          <van-button class="div_btn" color="black"><span class="out">抽取</span>一张男生纸条</van-button>
+          <van-button @click="outScrip" class="div_btn" color="black"><span class="out">抽取</span>一张男生纸条</van-button>
         </div>
         <div class="div_btn1">
-          <van-button class="div_btn" color="black"><span class="in">放入</span>一张男生纸条</van-button>
+          <van-button @click="inScrip(1)" class="div_btn" color="black"><span class="in">放入</span>一张男生纸条</van-button>
         </div>
       </div>
       <div class="div_box_0">
@@ -122,7 +216,7 @@
           <van-button class="div_btn" color="black"><span class="out">抽取</span>一张女生纸条</van-button>
         </div>
         <div class="div_btn1">
-          <van-button class="div_btn" color="black"><span class="in">放入</span>一张女生纸条</van-button>
+          <van-button @click="inScrip(0)" class="div_btn" color="black"><span class="in">放入</span>一张女生纸条</van-button>
         </div>
       </div>
     </div>
@@ -138,28 +232,112 @@
 </template>
 
 <script>
+import Util from "@/utils/Util.js";
+import wxUtil from "@/utils/wxUtil.js";
+import {Notify} from "vant";
+
 export default {
   name: "index",
   data(){
     return{
       show:{
         roseShow:false,//玫瑰弹出层
+        saveScrip:false,//放纸条
       },
-      userInfo:{
-        headimgurl: "",
-        nickname: "任胖子",
-        openid: "",
-        sex: 0,
-        rose:0,
-      }
+      scrip:{
+        cityName:'未知城市',
+        weChat:'',
+        picture:[],//点击上传后的图片预览样式
+        isOpen:0,//是否展示到广场 0不展示 1展示
+        userIp:localStorage.getItem('ip'),
+        life:1,
+        gender:0,//纸条所属盒子，0为女盒子 1为男盒子
+        resume:'',//宣言
+        userInfo:{
+          headimgurl: "",
+          nickname: "",
+          openid: "",
+          sex: 0,
+          rose:0,
+          scripCount:0,
+        },
+      },
     }
   },
   created() {
     this.initUserInfo()
+    this.getCity()
   },
   mounted() {
   },
   methods:{
+
+    /*签到*/
+    signIn(){
+      this.$http.get("/box/signIn?openid="+this.scrip.userInfo.openid)
+      .then((res)=>{
+        console.log("签到结果",res)
+        if(res.data.result){
+          this.myNotify(res.data.data,2000,'success')
+        }
+      })
+    },
+
+    /*放入纸条*/
+    inScrip(gender){
+      this.scrip.gender=gender
+      this.show.saveScrip=true
+    },
+    saveScrip(){
+      this.myNotify('正在投放纸条...',0,'primary')
+      this.$http.post("/box/saveScrip",this.scrip)
+      .then((res)=>{
+        this.show.saveScrip=false
+        this.scrip=this.$options.data().scrip
+        console.log("上传结果",res);
+        if(res.data.result){
+          /*上传成功*/
+          this.myNotify('纸条投放成功啦~',2000,'success')
+        }else {
+          this.myNotify('纸条投放失败,请重试！',2000,'danger')
+        }
+      })
+    },
+
+    /*取纸条*/
+    outScrip(){
+      let result=wxUtil.getPrepayId(this,this.scrip.userInfo.openid,"这是一个商品描述",150)
+      console.log("支付结果如下",result)
+    },
+
+    /*点击上传图片后触发此函数*/
+    afterRead(file){
+      console.log(file);
+      this.myNotify('正在上传...',0,'primary')
+      Util.putFile(this,file.file,this.scrip.userInfo.openid+'/'+new Date().getTime().toString(),"png")
+      .then((res)=>{
+        console.log("图片上传结果,",res)
+        this.scrip.picture.push('http://'+res.Location)
+        this.myNotify('上传成功',2000,'success')
+      })
+      .catch((err)=>{
+        console.log(err)
+        Notify({
+          message: '上传失败',
+          duration: 1000,
+          type:'warning'
+        });
+      })
+    },
+
+    /*获取用户城市信息*/
+    getCity(){
+      Util.getCurrentCityName()
+      .then(res=>{
+        this.scrip.cityName=res
+      })
+    },
+    /*初始化用户信息*/
     initUserInfo(){
       let userInfo=localStorage.getItem('userInfo')
       if(userInfo!==null){
@@ -168,10 +346,18 @@ export default {
         .then((res)=>{
           console.log("读取授权信息如下:",res);
           if(res.data.result){
-            this.userInfo=res.data.data
+            this.scrip.userInfo=res.data.data
           }
         })
       }
+    },
+    /*消息提示*/
+    myNotify(message,duration,type){
+      Notify({
+        message: message,
+        duration: duration,
+        type:type
+      });
     }
   }
 }

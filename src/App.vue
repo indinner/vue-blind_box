@@ -8,6 +8,7 @@
 <script>
 
 import wxUtil from "./utils/wxUtil.js"
+import Util from "@/utils/Util.js";
 export default {
   name: 'App',
   components: {
@@ -27,6 +28,7 @@ export default {
     }else if(wxUtil.getQueryVariable("code")!==undefined) {
       this.login()
     }
+
   },
   methods:{
     login(){
