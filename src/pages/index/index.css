@@ -105,6 +105,9 @@ body{
     color: green;
     margin-left: 5px;
 }
+.div_confirm{
+    font-weight: 600;
+}
 
 .div_buy_1{
     display: flex;

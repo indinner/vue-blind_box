@@ -35,15 +35,15 @@
 
             <div>
               <div class="div_buy_1">
-                <div v-for="item in 3" class="div_buy_2">
+                <div v-for="item in commodityRose" class="div_buy_2">
                   <div class="rose_name">
-                    <span>1玫瑰</span>
+                    <span>{{item.roseCount}}玫瑰</span>
                   </div>
                   <div class="rose_price">
-                    <span>0.88元</span>
+                    <span>{{ item.total/100 }}元</span>
                   </div>
                   <div class="rose_buy">
-                    <van-button class="rose_buy_bt" size="small" color="#e83a3a">购买</van-button>
+                    <van-button @click="buyRose(item)" class="rose_buy_bt" size="small" color="#e83a3a">购买</van-button>
                   </div>
                 </div>
               </div>
@@ -148,6 +148,14 @@
         </van-popup>
       </div>
 
+      <!--   确认抽取   -->
+      <van-popup style="border-radius: 10px" v-model:show="show.outScripShow">
+        <van-button  type="success" color="black" size="normal">
+          <span @click="getScrip(0)" v-show="scrip.userInfo.outSex===0" class="div_confirm">确认抽取女生纸条？</span>
+          <span @click="getScrip(1)" v-show="scrip.userInfo.outSex===1" class="div_confirm">确认抽取男生纸条？</span>
+        </van-button>
+      </van-popup>
+
     </div>
 
     <!--  轮播图  -->
@@ -168,12 +176,12 @@
     <div>
       <div class="div_2">
 
-        <div class="div_2_box">
+        <div @click="show.roseShow=!show.roseShow" class="div_2_box">
           <div style="display: flex;justify-content: center">
             <div class="div_2_icon">
               <img style="width: 100%;height: 100%" src="https://cos.jianwei.top/blind_box/icon/%E7%8E%AB%E7%91%B0.png"/>
             </div>
-            <div @click="show.roseShow=!show.roseShow" class="div_2_text">
+            <div class="div_2_text">
               <span>我的玫瑰</span>
             </div>
           </div>
@@ -204,7 +212,7 @@
       <div class="div_box_1">
         <img class="img" src="https://rbt-1302363069.cos.ap-shanghai.myqcloud.com/yuelao/501638764175257772.png">
         <div class="div_btn1">
-          <van-button @click="outScrip" class="div_btn" color="black"><span class="out">抽取</span>一张男生纸条</van-button>
+          <van-button @click="outScrip(1)" class="div_btn" color="black"><span class="out">抽取</span>一张男生纸条</van-button>
         </div>
         <div class="div_btn1">
           <van-button @click="inScrip(1)" class="div_btn" color="black"><span class="in">放入</span>一张男生纸条</van-button>
@@ -213,7 +221,7 @@
       <div class="div_box_0">
         <img class="img" src="https://rbt-1302363069.cos.ap-shanghai.myqcloud.com/yuelao/822877153040097396.png">
         <div class="div_btn1">
-          <van-button class="div_btn" color="black"><span class="out">抽取</span>一张女生纸条</van-button>
+          <van-button @click="outScrip(0)" class="div_btn" color="black"><span class="out">抽取</span>一张女生纸条</van-button>
         </div>
         <div class="div_btn1">
           <van-button @click="inScrip(0)" class="div_btn" color="black"><span class="in">放入</span>一张女生纸条</van-button>
@@ -226,7 +234,6 @@
 
 
 
-
   </div>
 
 </template>
@@ -235,6 +242,7 @@
 import Util from "@/utils/Util.js";
 import wxUtil from "@/utils/wxUtil.js";
 import {Notify} from "vant";
+import BaseConfig from "@/config/base.config.js";
 
 export default {
   name: "index",
@@ -243,7 +251,23 @@ export default {
       show:{
         roseShow:false,//玫瑰弹出层
         saveScrip:false,//放纸条
+        outScripShow:false,//确认购买纸条
       },
+      commodityRose:[
+        {
+          total: 100,
+          roseCount:1,
+        },
+        {
+          total: 468,
+          roseCount:5,
+        },
+        {
+          total: 888,
+          roseCount:10,
+        }
+      ],
+      outScripSex:null,
       scrip:{
         cityName:'未知城市',
         weChat:'',
@@ -260,6 +284,7 @@ export default {
           sex: 0,
           rose:0,
           scripCount:0,
+          outSex:null,
         },
       },
     }
@@ -272,6 +297,31 @@ export default {
   },
   methods:{
 
+    /*购买玫瑰*/
+    async buyRose(item) {
+      let baseCommodity = {
+        openid: this.scrip.userInfo.openid,
+        description: '玫瑰*'+item.roseCount,
+        out_trade_no: new Date().getTime().toString() + 'xzt',
+        total: item.total,
+        userInfo:this.scrip.userInfo,
+        roseCount:item.roseCount
+      }
+      let result = await wxUtil.placeOrder(this, BaseConfig.wxConfig.APPID, baseCommodity)
+      if(result===200){
+        /*用户支付成功*/
+        this.$http.post("/box/outScrip", baseCommodity)
+        .then((res)=>{
+          console.log("购买玫瑰结果如下：",res)
+          if(res.data.result){
+            this.myNotify('购买成功',2000,'success')
+            this.scrip.userInfo=res.data.data
+            this.show.roseShow=false
+          }
+        })
+      }
+    },
+
     /*签到*/
     signIn(){
       this.$http.get("/box/signIn?openid="+this.scrip.userInfo.openid)
@@ -279,6 +329,9 @@ export default {
         console.log("签到结果",res)
         if(res.data.result){
           this.myNotify(res.data.data,2000,'success')
+          if(res.data.data==='签到成功'){
+            this.scrip.userInfo.rose=this.scrip.userInfo.rose+1
+          }
         }
       })
     },
@@ -305,9 +358,16 @@ export default {
     },
 
     /*取纸条*/
-    outScrip(){
-      let result=wxUtil.getPrepayId(this,this.scrip.userInfo.openid,"这是一个商品描述",150)
-      console.log("支付结果如下",result)
+    outScrip(sex) {
+      this.scrip.userInfo.outSex=sex
+      this.show.outScripShow=true
+    },
+    getScrip(sex){
+      if(this.scrip.userInfo.rose<1){
+        this.myNotify('玫瑰不够~',3000,'warning')
+        return
+      }
+      this.$http.post("/box/getScrip")
     },
 
     /*点击上传图片后触发此函数*/

@@ -4,7 +4,7 @@ module.exports = defineConfig({
   lintOnSave:false,
   devServer:{
     open: true,
-    host: '0.0.0.0',
+    host: '127.0.0.1',
     port: 80,
     https: false,
     //以上的ip和端口是我们本机的;下面为需要跨域的
@@ -17,7 +17,11 @@ module.exports = defineConfig({
           '^/api': ''//请求的时候使用这个api就可以
         }
       }
-    }
+    },
+    allowedHosts: [
+      'host.com', // 允许访问的域名地址，即花生壳内网穿透的地址
+      '.overwatch2.vip'   // .是二级域名的通配符
+    ],
   },
 
 })
