@@ -43,6 +43,8 @@ let Util={
         var Region = 'ap-shanghai';     /* 存储桶所在地域，必须字段 */
         // 初始化实例
         const cos = new COS({
+            Domain: 'cdn.jianwei.top', // 自定义加速域名
+            Protocol: 'http:', // 请求协议： 'https:' 或 'http:'
             // getAuthorization 必选参数
             getAuthorization: function (options, callback) {
                 // 初始化时不会调用，只有调用cos方法（比如cos.putObject）时才会进入

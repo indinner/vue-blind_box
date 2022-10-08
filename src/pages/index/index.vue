@@ -113,7 +113,7 @@
                       label="纸条生命"
                   >
                     <template #button>
-                      <van-stepper v-model="scrip.life" min="1" max="3" />
+                      <van-stepper v-model="scrip.life" min="1" max="5" />
                     </template>
                   </van-field>
                 </van-cell-group>
@@ -125,7 +125,7 @@
 
             <div>
               <div class="div_title1">
-                <span class="div_title1_text1">1玫瑰/次 </span>
+                <span class="div_title1_text1">2玫瑰/次 </span>
                 <span class="div_title1_text2"> 限时免费</span>
               </div>
             </div>
@@ -148,11 +148,62 @@
         </van-popup>
       </div>
 
+      <!--   展示抽取的纸条   -->
+      <van-popup v-model:show="show.getScripShow"
+                 lazy-render
+                 round
+                 closeable
+                 :style="{ width:'90%' }">
+        <div class="div_scrip">
+          <!--     title       -->
+          <div class="div_scrip_title">抽到的小纸条~</div>
+          <!--     头像昵称       -->
+          <div class="div_headimg">
+            <img class="scrip_headimg" :src="getScripData.userInfo.headimgurl" />
+            <div class="scrip_nickname">
+              <span>{{ getScripData.userInfo.nickname }}</span>
+            </div>
+          </div>
+          <!-- 输入框 -->
+          <div class="scrip_input_div">
+            <div>
+              <!-- 定位 -->
+              <div class="div_location">
+                <van-tag color="black" size="medium" type="warning">
+                  <van-icon name="location" /><span>{{ getScripData.cityName }}</span>
+                </van-tag>
+              </div>
+              <div class="van-hairline--bottom"></div>
+            </div>
+            <!-- 内容 -->
+            <van-field
+                readonly
+                v-model="getScripData.resume"
+                type="textarea"
+                placeholder="输入你的交友宣言(请文明填写,禁止在宣言留下个人信息,请认真填写VX号,事先检查是否打开了加好友的权限)"
+            />
+            <!-- 图片 -->
+            <div class="div_uploader_img">
+              <van-image  fit="cover" class="div_uploader_img_preview" v-for="item in getScripData.picture" :src="item" />
+            </div>
+
+            <!-- 我的VX -->
+            <div class="div_vx_input1">
+              <van-field readonly  left-icon="wechat" v-model="getScripData.weChat" label="WX or TEL" placeholder="请输入WX or TEL" />
+            </div>
+
+          </div>
+
+        </div>
+      </van-popup>
+
       <!--   确认抽取   -->
       <van-popup style="border-radius: 10px" v-model:show="show.outScripShow">
-        <van-button  type="success" color="black" size="normal">
-          <span @click="getScrip(0)" v-show="scrip.userInfo.outSex===0" class="div_confirm">确认抽取女生纸条？</span>
-          <span @click="getScrip(1)" v-show="scrip.userInfo.outSex===1" class="div_confirm">确认抽取男生纸条？</span>
+        <van-button v-show="scrip.userInfo.outSex===0" @click="getScrip(0,2)" type="success" color="black" size="normal">
+          <span class="div_confirm">确认抽取女生纸条？</span>
+        </van-button>
+        <van-button v-show="scrip.userInfo.outSex===1" @click="getScrip(1,2)" type="success" color="black" size="normal">
+          <span class="div_confirm">确认抽取男生纸条？</span>
         </van-button>
       </van-popup>
 
@@ -230,7 +281,33 @@
     </div>
 
     <!--  纸条广场  -->
-
+    <div style="padding-bottom: 10%">
+      <div v-for="item in scrips" class="div_square">
+        <div>
+          <!-- 性别,城市  -->
+          <div class="div_city">
+            <span v-show="item.gender===0" class="div_city_sex">[女生]</span>
+            <span v-show="item.gender===1" class="div_city_sex1">[男生]</span>
+            <span class="div_city_city">{{ item.cityName }}</span>
+          </div>
+          <div class="van-hairline--bottom"></div>
+          <div class="div_intro">
+            <span  class="van-multi-ellipsis--l2 div_intro_span">{{item.resume}}</span>
+          </div>
+          <div class="div_picture">
+            <van-image lazy-load @click="previewImg(item1)" v-for="item1 in item.picture" class="div_picture_img" fit="cover"
+                       :src="item1"></van-image>
+          </div>
+          <div class="van-hairline--bottom"></div>
+          <div class="div_square_time">
+            <div class="square_time">{{ item.createTime }}</div>
+            <div class="square_bt">
+              <van-button @click="getScripById(item)" class="square_bt_bt" size="mini" round color="black">取走</van-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
 
 
@@ -241,7 +318,7 @@
 <script>
 import Util from "@/utils/Util.js";
 import wxUtil from "@/utils/wxUtil.js";
-import {Notify} from "vant";
+import {Dialog, ImagePreview, Notify} from "vant";
 import BaseConfig from "@/config/base.config.js";
 
 export default {
@@ -252,19 +329,20 @@ export default {
         roseShow:false,//玫瑰弹出层
         saveScrip:false,//放纸条
         outScripShow:false,//确认购买纸条
+        getScripShow:false,//展示抽到的纸条
       },
       commodityRose:[
         {
           total: 100,
-          roseCount:1,
+          roseCount:2,
         },
         {
           total: 468,
-          roseCount:5,
+          roseCount:10,
         },
         {
           total: 888,
-          roseCount:10,
+          roseCount:20,
         }
       ],
       outScripSex:null,
@@ -285,17 +363,73 @@ export default {
           rose:0,
           scripCount:0,
           outSex:null,
+          subRose:null,
         },
       },
+      getScripData:{},//抽到的纸条
+      scrips:[],
     }
   },
   created() {
     this.initUserInfo()
     this.getCity()
+    this.initScrips()
   },
   mounted() {
   },
   methods:{
+
+    /*取走指定纸条*/
+    getScripById(item){
+      console.log(item)
+      this.scrip.userInfo.subRose=3
+      Dialog.alert({
+        message: '确认消耗【三朵玫瑰】取走纸条?',
+        showCancelButton:true,
+      }).then(() => {
+        if(this.scrip.userInfo.rose<1){
+          this.myNotify('玫瑰不够~',3000,'warning')
+          this.show.outScripShow=false
+          this.show.roseShow=true
+          return
+        }
+        let ScripLog={
+          scrip:item,
+          userInfo:this.scrip.userInfo
+        }
+        this.$http.post("/box/getScripById",ScripLog)
+        .then((res)=>{
+          console.log("指定纸条:",res)
+          if(res.data.result){
+            this.initUserInfo()
+            this.initScrips()
+            this.getScripData=item
+            this.show.outScripShow=false
+            this.show.getScripShow=true
+            this.myNotify('成功取出！',3000,'success')
+          }else {
+            this.show.outScripShow=false
+            this.myNotify('取出失败,不扣除玫瑰',3000,'warning')
+          }
+        })
+      });
+    },
+
+    /*初始化广场*/
+    initScrips(){
+      this.$http.get("/box/getListScrip")
+      .then((res)=>{
+        console.log(res)
+        if(res.data.result){
+          this.scrips=res.data.data
+        }
+      })
+    },
+
+    /*图片预览*/
+    previewImg(img){
+      ImagePreview([img]);
+    },
 
     /*购买玫瑰*/
     async buyRose(item) {
@@ -346,7 +480,7 @@ export default {
       this.$http.post("/box/saveScrip",this.scrip)
       .then((res)=>{
         this.show.saveScrip=false
-        this.scrip=this.$options.data().scrip
+        this.initScrip()
         console.log("上传结果",res);
         if(res.data.result){
           /*上传成功*/
@@ -356,18 +490,42 @@ export default {
         }
       })
     },
+    /*重置纸条数据*/
+    initScrip(){
+      this.scrip.picture=[]
+      this.scrip.resume=''
+      this.scrip.weChat=''
+    },
 
     /*取纸条*/
     outScrip(sex) {
       this.scrip.userInfo.outSex=sex
       this.show.outScripShow=true
     },
-    getScrip(sex){
+    getScrip(sex,subRose){
+      this.scrip.userInfo.outSex=sex
+      this.scrip.userInfo.subRose=subRose
       if(this.scrip.userInfo.rose<1){
         this.myNotify('玫瑰不够~',3000,'warning')
+        this.show.outScripShow=false
+        this.show.roseShow=true
         return
       }
-      this.$http.post("/box/getScrip")
+      this.myNotify('正在匹配缘分...',0,'primary')
+      this.$http.post("/box/getScrip",this.scrip.userInfo)
+      .then((res)=>{
+        console.log("获取纸条结果如下",res)
+        if(res.data.result){
+          this.initUserInfo()
+          this.getScripData=res.data.data
+          this.show.outScripShow=false
+          this.show.getScripShow=true
+          this.myNotify('匹配成功！',3000,'success')
+        }else {
+          this.show.outScripShow=false
+          this.myNotify('匹配失败,不扣除玫瑰',3000,'warning')
+        }
+      })
     },
 
     /*点击上传图片后触发此函数*/

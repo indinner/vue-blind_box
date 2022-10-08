@@ -7,6 +7,7 @@ import { Uploader } from 'vant';
 import { Image as VanImage } from 'vant';
 import { Notify } from 'vant';
 import { Stepper } from 'vant';
+import { Lazyload } from 'vant';
 import 'vant/lib/index.css';
 
 export function vant(app) {
@@ -19,5 +20,6 @@ export function vant(app) {
     app.use(Uploader)
     app.use(VanImage)
     app.use(Stepper);
+    app.use(Lazyload)
 }
 

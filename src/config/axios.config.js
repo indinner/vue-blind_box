@@ -9,7 +9,7 @@ let request = axios.create({
 if (process.env.NODE_ENV === 'development') {
     request.defaults.baseURL = 'http://192.168.31.44:7770'
 } else if (process.env.NODE_ENV === 'production') {
-    request.defaults.baseURL = 'http://121.4.138.132:8891'
+    request.defaults.baseURL = 'http://162.14.109.182:5282'
 }
 
 /*request.defaults.headers.get['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8'
