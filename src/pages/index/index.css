@@ -286,7 +286,7 @@ body{
     height: 300px;
     margin-left: 10px;
     margin-right: 1%;
-    background-image: url("https://rbt-1302363069.cos.ap-shanghai.myqcloud.com/yuelao/318789850286028423.jpg");
+    background-image: url("http://cdn.jianwei.top/blind_box/icon/318789850286028423.jpg");
     background-size: 100% 300px;
     border-radius: 10px;
 }
@@ -295,7 +295,7 @@ body{
     height: 300px;
     margin-left: 1%;
     margin-right: 10px;
-    background-image: url("https://rbt-1302363069.cos.ap-shanghai.myqcloud.com/yuelao/637797075837011665.jpg");
+    background-image: url("http://cdn.jianwei.top/blind_box/icon/637797075837011665.jpg");
     background-size: 100% 300px;
     border-radius: 10px;
 }
@@ -319,7 +319,7 @@ body{
 .div_square{
     width: 94%;
     margin-left: 3%;
-    margin-top: 3%;
+    margin-top: 1%;
     background-color: white;
     border-radius: 6px;
 }
@@ -371,7 +371,28 @@ body{
     width: 40px;
     font-weight: 600;
 }
-
+.div_notify{
+    display: flex;
+}
+.div_notify_message{
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
+}
+.div_square_title_div{
+    width: 94%;
+    margin-left: 3%;
+    margin-top: 10px;
+    border-radius: 7px;
+    background-color: white;
+}
+.div_square_title{
+    padding-left: 12px;
+    padding-top:5px;
+    padding-bottom: 5px;
+    font-size: 15px;
+    font-weight: 600;
+}
 
 
 

@@ -125,9 +125,9 @@ let wxUtil={
         if(code!==undefined){
             /*根据code用户信息*/
             that.$http.get("/wxAuthentication/getUserInfo?code="+code)
-                .then((res)=>{
+                .then(async (res)=>{
                     if(res.data.result){
-                        this.saveUserInfo(that,JSON.parse(res.data.data))
+                        await this.saveUserInfo(that,JSON.parse(res.data.data))
                         localStorage.setItem('userInfo',res.data.data)
                         callBack()
                     }else {
@@ -141,14 +141,16 @@ let wxUtil={
     /**
      * 存储用户信息*/
     saveUserInfo(that,userInfo){
-        that.$http.post("/box/saveUserInfo",userInfo,{
-            headers:{
-                'Content-Type':'application/json'
-            }
-        })
-            .then((res)=>{
-
+        return new Promise(function (resolve, reject) {
+            that.$http.post("/box/saveUserInfo",userInfo,{
+                headers:{
+                    'Content-Type':'application/json'
+                }
             })
+                .then((res)=>{
+                    resolve(200)
+                })
+        })
     },
     getQueryVariable (variable) {
         const after = location.href.split('?')[1]

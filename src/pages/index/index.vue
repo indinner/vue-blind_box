@@ -53,6 +53,43 @@
         </van-popup>
       </div>
 
+      <!--   展示纸条记录   -->
+      <div>
+        <van-popup v-model:show="show.scripShow"
+                   lazy-render
+                   position="bottom"
+                   round
+                   closeable
+                   :style="{ height: '60%' }">
+          <div>
+            <div style="padding-bottom: 10%">
+              <div v-for="item in scripLog" class="div_square">
+                <div>
+                  <!-- 性别,城市  -->
+                  <div class="div_city">
+                    <span v-show="item.gender===0" class="div_city_sex">[女生]</span>
+                    <span v-show="item.gender===1" class="div_city_sex1">[男生]</span>
+                    <span class="div_city_city">{{ item.cityName }}</span>
+                  </div>
+                  <div class="van-hairline--bottom"></div>
+                  <div class="div_intro">
+                    <span  class="van-multi-ellipsis--l2 div_intro_span">{{item.resume}}</span>
+                  </div>
+                  <div class="div_picture">
+                    <van-image lazy-load @click="previewImg(item1)" v-for="item1 in item.picture" class="div_picture_img" fit="cover"
+                               :src="item1"></van-image>
+                  </div>
+                  <div class="van-hairline--bottom"></div>
+                  <div class="div_square_time">
+                    <div class="square_time">WX or TEL：{{ item.weChat }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </van-popup>
+      </div>
+
       <!--   添加纸条   -->
       <div>
         <van-popup v-model:show="show.saveScrip"
@@ -241,7 +278,7 @@
           </div>
         </div>
 
-        <div class="div_2_box">
+        <div @click="show.scripShow=!show.scripShow" class="div_2_box">
           <div style="display: flex;justify-content: center">
             <div class="div_2_icon">
               <img style="width: 100%;height: 100%" src="https://cos.jianwei.top/blind_box/icon/%E6%83%85%E4%B9%A6.png"/>
@@ -261,7 +298,7 @@
     <!--   存放两个盒子 -->
     <div class="div_1">
       <div class="div_box_1">
-        <img class="img" src="https://rbt-1302363069.cos.ap-shanghai.myqcloud.com/yuelao/501638764175257772.png">
+        <img class="img" src="http://cdn.jianwei.top/blind_box/icon/501638764175257772.png">
         <div class="div_btn1">
           <van-button @click="outScrip(1)" class="div_btn" color="black"><span class="out">抽取</span>一张男生纸条</van-button>
         </div>
@@ -270,7 +307,7 @@
         </div>
       </div>
       <div class="div_box_0">
-        <img class="img" src="https://rbt-1302363069.cos.ap-shanghai.myqcloud.com/yuelao/822877153040097396.png">
+        <img class="img" src="http://cdn.jianwei.top/blind_box/icon/822877153040097396.png">
         <div class="div_btn1">
           <van-button @click="outScrip(0)" class="div_btn" color="black"><span class="out">抽取</span>一张女生纸条</van-button>
         </div>
@@ -282,6 +319,12 @@
 
     <!--  纸条广场  -->
     <div style="padding-bottom: 10%">
+      <!--   title   -->
+      <div class="div_square_title_div">
+        <div class="div_square_title">
+          <span>纸条广场</span>
+        </div>
+      </div>
       <div v-for="item in scrips" class="div_square">
         <div>
           <!-- 性别,城市  -->
@@ -311,6 +354,7 @@
 
 
 
+
   </div>
 
 </template>
@@ -330,6 +374,7 @@ export default {
         saveScrip:false,//放纸条
         outScripShow:false,//确认购买纸条
         getScripShow:false,//展示抽到的纸条
+        scripShow:false,//展示纸条列表
       },
       commodityRose:[
         {
@@ -367,59 +412,33 @@ export default {
         },
       },
       getScripData:{},//抽到的纸条
-      scrips:[],
+      scrips:[],//广场数据
+      notifyMessage:'正在加载...',//消息通知信息
+      scripLog:[]
     }
   },
   created() {
     this.initUserInfo()
     this.getCity()
     this.initScrips()
+    this.initScripLog()
   },
   mounted() {
   },
   methods:{
 
-    /*取走指定纸条*/
-    getScripById(item){
-      console.log(item)
-      this.scrip.userInfo.subRose=3
-      Dialog.alert({
-        message: '确认消耗【三朵玫瑰】取走纸条?',
-        showCancelButton:true,
-      }).then(() => {
-        if(this.scrip.userInfo.rose<1){
-          this.myNotify('玫瑰不够~',3000,'warning')
-          this.show.outScripShow=false
-          this.show.roseShow=true
-          return
-        }
-        let ScripLog={
-          scrip:item,
-          userInfo:this.scrip.userInfo
-        }
-        this.$http.post("/box/getScripById",ScripLog)
-        .then((res)=>{
-          console.log("指定纸条:",res)
-          if(res.data.result){
-            this.initUserInfo()
-            this.initScrips()
-            this.getScripData=item
-            this.show.outScripShow=false
-            this.show.getScripShow=true
-            this.myNotify('成功取出！',3000,'success')
-          }else {
-            this.show.outScripShow=false
-            this.myNotify('取出失败,不扣除玫瑰',3000,'warning')
-          }
-        })
-      });
+    /*初始化本地记录*/
+    initScripLog(){
+      if(localStorage.getItem('scripLog')!==null){
+        this.scripLog=JSON.parse(localStorage.getItem('scripLog')).scripLog
+      }
     },
+
 
     /*初始化广场*/
     initScrips(){
       this.$http.get("/box/getListScrip")
       .then((res)=>{
-        console.log(res)
         if(res.data.result){
           this.scrips=res.data.data
         }
@@ -476,6 +495,14 @@ export default {
       this.show.saveScrip=true
     },
     saveScrip(){
+      if(localStorage.getItem('userInfo')===null){
+        this.myNotify('请先授权登录',3000,'primary')
+        return
+      }
+      if(this.scrip.weChat===''){
+        this.myNotify('请填写纸条信息',3000,'primary')
+        return;
+      }
       this.myNotify('正在投放纸条...',0,'primary')
       this.$http.post("/box/saveScrip",this.scrip)
       .then((res)=>{
@@ -486,7 +513,12 @@ export default {
           /*上传成功*/
           this.myNotify('纸条投放成功啦~',2000,'success')
         }else {
-          this.myNotify('纸条投放失败,请重试！',2000,'danger')
+          if(res.data.msg==='今日已投放'){
+            this.myNotify('今日已投放',2000,'danger')
+          }else {
+            this.myNotify('纸条投放失败,请重试！',2000,'danger')
+          }
+
         }
       })
     },
@@ -505,7 +537,7 @@ export default {
     getScrip(sex,subRose){
       this.scrip.userInfo.outSex=sex
       this.scrip.userInfo.subRose=subRose
-      if(this.scrip.userInfo.rose<1){
+      if(this.scrip.userInfo.rose<2){
         this.myNotify('玫瑰不够~',3000,'warning')
         this.show.outScripShow=false
         this.show.roseShow=true
@@ -518,6 +550,7 @@ export default {
         if(res.data.result){
           this.initUserInfo()
           this.getScripData=res.data.data
+          this.saveScripLog(res.data.data)
           this.show.outScripShow=false
           this.show.getScripShow=true
           this.myNotify('匹配成功！',3000,'success')
@@ -526,6 +559,56 @@ export default {
           this.myNotify('匹配失败,不扣除玫瑰',3000,'warning')
         }
       })
+    },
+    /*取走指定纸条*/
+    getScripById(item){
+      console.log(item)
+      this.scrip.userInfo.subRose=3
+      Dialog.alert({
+        message: '确认消耗【三朵玫瑰】取走纸条?',
+        showCancelButton:true,
+      }).then(() => {
+        if(this.scrip.userInfo.rose<1){
+          this.myNotify('玫瑰不够~',3000,'warning')
+          this.show.outScripShow=false
+          this.show.roseShow=true
+          return
+        }
+        let ScripLog={
+          scrip:item,
+          userInfo:this.scrip.userInfo
+        }
+        this.$http.post("/box/getScripById",ScripLog)
+            .then((res)=>{
+              console.log("指定纸条:",res)
+              if(res.data.result){
+                this.initUserInfo()
+                this.initScrips()
+                this.getScripData=item
+                this.saveScripLog(item)
+                this.show.outScripShow=false
+                this.show.getScripShow=true
+                this.myNotify('成功取出！',3000,'success')
+              }else {
+                this.show.outScripShow=false
+                this.myNotify('取出失败,不扣除玫瑰',3000,'warning')
+              }
+            })
+      });
+    },
+    /*存储纸条记录到本地*/
+    saveScripLog(item){
+      this.scripLog.unshift(item)
+      if(localStorage.getItem('scripLog')===null){
+        let scripLogs={
+          scripLog:[item]
+        }
+        localStorage.setItem('scripLog',JSON.stringify(scripLogs))
+      }else {
+        let scripLogs=JSON.parse(localStorage.getItem('scripLog'))
+        scripLogs.scripLog.unshift(item)
+        localStorage.setItem('scripLog',JSON.stringify(scripLogs))
+      }
     },
 
     /*点击上传图片后触发此函数*/
